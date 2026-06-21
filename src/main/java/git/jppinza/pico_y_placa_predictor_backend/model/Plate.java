@@ -1,21 +1,15 @@
 package git.jppinza.pico_y_placa_predictor_backend.model;
 
-public class Plate {
+public abstract class Plate {
     //I'm going to apply encapsulation
-    private final String plateNumber;
-    private final int lastDigit;
+    protected final String plateNumber;
 
     //I'm going to create a constructor:
     public Plate(String plateNumber){
-        if (plateNumber == null) {
-            throw new IllegalArgumentException("Inputs can't be null");
+        if (plateNumber == null || plateNumber.trim().isEmpty()) {
+            throw new IllegalArgumentException("Inputs cannot be null or empty");
         }
-        String sanitized = plateNumber.trim();
-        if (sanitized.isEmpty() || !Character.isDigit(sanitized.charAt(sanitized.length() - 1))) {
-            throw new IllegalArgumentException("Invalid plate number format");
-        }
-        this.plateNumber = sanitized;
-        this.lastDigit = Character.getNumericValue(this.plateNumber.charAt(this.plateNumber.length() - 1));
+        this.plateNumber = plateNumber.trim().toUpperCase();
     }
 
     //We only can access and modify the attributes by using setters, getters or methods:
@@ -23,13 +17,18 @@ public class Plate {
         return this.plateNumber;
     }
 
-    public int getLastDigit() {
-        return this.lastDigit;
-    }
+    // Abstract method strictly implemented by child classes (avoiding overridable calls in constructor)
+    public abstract int getLastDigit();
 
-    @Override
-    public String toString(){
-        return "Plate{plateNumber="+plateNumber+"}";
+    // Factory method to apply polymorphism in an easiest way
+    public static Plate createPlate(String plateNumber) {
+        if (plateNumber == null) throw new IllegalArgumentException("Inputs cannot be null");
+
+        if (plateNumber.contains("-")) {
+            return new CarPlate(plateNumber);
+        } else {
+            return new MotorcyclePlate(plateNumber);
+        }
     }
 
 }
