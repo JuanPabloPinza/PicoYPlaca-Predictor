@@ -1,0 +1,3 @@
+spring:
+  application:
+    name: pico-y-placa-predictor-backend
